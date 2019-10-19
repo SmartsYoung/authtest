@@ -1,0 +1,15 @@
+ account:
+   clientId:  "userID"
+   client_secret:  "yourSecret"
+   redictUrl:
+   scopes:
+   endpoint:
+ style:
+   oauth2:
+   openId:
+ website:
+   github:
+   google:
+   gitlab:
+
+
