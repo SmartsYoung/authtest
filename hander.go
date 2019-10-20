@@ -1,43 +1,44 @@
 package main
 
 import (
-	"authtest/authentication"
+	"context"
 	"fmt"
 	"golang.org/x/oauth2"
 	"io/ioutil"
 	"net/http"
 )
 
-func main() {
 
-	var c authtest.auth
-	auth := c.getAuth()
-	clientID :=auth.account.clientID
-	fmt.Println(clientID)
+var ac = auth.account.getAuth();
+Auth := c.getAuth()
+clientID :=auth.account.clientID
+fmt.Println(clientID)
 
+var websiteOauthConfig = &oauth2.Config{
+	ClientID:     str,
+	ClientSecret: "6f5dae1fe00eb0aa0af931e8e249de8fa76fdacd",
+	RedirectURL:  "http://localhost:9094/oauth2",
+	Scopes:       []string{"user","project"},
 
-	http.HandleFunc("/", handleMain)
-	http.HandleFunc("/login", handleGithubLogin)
-	http.HandleFunc("/oauth2", handleGithubCallback)
-	fmt.Println(http.ListenAndServe(":9094", nil))
 }
 
+
 func handleMain(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, htmlIndex)
+	fmt.Fprintf(w, main.htmlIndex)
 }
 
 //https://github.com/login
 
-func handleGithubLogin(w http.ResponseWriter, r *http.Request) {
-	url := githubOauthConfig.AuthCodeURL(oauthStateString)
+func handleWebsiteLogin(w http.ResponseWriter, r *http.Request) {
+	url := websiteOauthConfig.AuthCodeURL(main.oauthStateString)
 	fmt.Println(url)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func handleGithubCallback(w http.ResponseWriter, r *http.Request) {
+func handleWebsiteCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
-	if state != oauthStateString {
-		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
+	if state != main.oauthStateString {
+		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", main.oauthStateString, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -45,7 +46,7 @@ func handleGithubCallback(w http.ResponseWriter, r *http.Request) {
 
 	code := r.FormValue("code")
 	fmt.Println(code)
-	token, err := githubOauthConfig.Exchange(oauth2.NoContext, code)
+	token, err := main.githubOauthConfig.Exchange(context.Background(), code)
 	fmt.Println(token)
 	if err != nil {
 		fmt.Println("Code exchange failed with '%s'\n", err)
